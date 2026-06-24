@@ -1,0 +1,2080 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Сергей Потапов — Project Manager в IT и digital.">
+    <title>SP.EXE — PROJECT MANAGER</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --black:  #000000;
+            --white:  #FCFCFC;
+            --green:  #00B800;
+            --green2: #00E000;
+            --yellow: #FCE000;
+            --red:    #D82800;
+            --gray:   #6C6C6C;
+            --gray2:  #ADADAD;
+            --bg:     #080808;
+            --px:     'VT323', monospace;
+        }
+
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: var(--px);
+            background: var(--bg);
+            color: var(--white);
+            overflow-x: hidden;
+            line-height: 1.75;
+            font-size: 18px;
+        }
+
+        /* SCANLINES */
+        body::after {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 2px,
+                rgba(0,0,0,0.18) 2px,
+                rgba(0,0,0,0.18) 4px
+            );
+            pointer-events: none;
+            z-index: 9999;
+        }
+
+        /* CRT VIGNETTE */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,0.7) 100%);
+            pointer-events: none;
+            z-index: 9998;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50%       { opacity: 0; }
+        }
+        .blink { animation: blink 1s steps(1) infinite; }
+
+        /* Focus styles for keyboard navigation */
+        :focus-visible {
+            outline: 2px solid var(--green);
+            outline-offset: 3px;
+        }
+
+        /* Respect user motion preferences */
+        @media (prefers-reduced-motion: reduce) {
+            .blink, .hero-cursor { animation: none; opacity: 1; }
+            .coin-text { animation: none; }
+            .fade-up { opacity: 1; transform: none; transition: none; }
+            *, *::before, *::after {
+                transition-duration: 0.01ms !important;
+                animation-duration: 0.01ms !important;
+            }
+        }
+
+        .fade-up {
+            opacity: 0;
+            transform: translateY(24px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+        .fade-up.visible { opacity: 1; transform: translateY(0); }
+        .d1 { transition-delay: 0.1s; }
+        .d2 { transition-delay: 0.2s; }
+        .d3 { transition-delay: 0.3s; }
+        .d4 { transition-delay: 0.4s; }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+        section { padding: 5rem 0; }
+
+        /* ── NES BUTTON ── */
+        .btn-nes {
+            display: inline-block;
+            padding: 10px 20px;
+            font-family: var(--px);
+            font-size: 1.1rem;
+            text-decoration: none;
+            cursor: pointer;
+            border: 0;
+            color: var(--black);
+            background: var(--white);
+            box-shadow: inset -4px -4px 0 0 var(--gray), inset 4px 4px 0 0 var(--white);
+            transition: box-shadow 0.05s, transform 0.05s;
+            line-height: 1.4;
+            letter-spacing: 0.04em;
+        }
+        .btn-nes:hover  { color: var(--black); }
+        .btn-nes:active {
+            box-shadow: inset -4px -4px 0 0 var(--white), inset 4px 4px 0 0 var(--gray);
+            transform: translate(2px, 2px);
+        }
+        .btn-nes-yellow {
+            background: var(--yellow);
+            box-shadow: inset -4px -4px 0 0 #a89600, inset 4px 4px 0 0 var(--yellow);
+        }
+        .btn-nes-yellow:active {
+            box-shadow: inset -4px -4px 0 0 var(--yellow), inset 4px 4px 0 0 #a89600;
+        }
+        .btn-nes-green {
+            background: var(--green);
+            color: var(--white);
+            box-shadow: inset -4px -4px 0 0 #005a00, inset 4px 4px 0 0 var(--green2);
+        }
+        .btn-nes-green:active {
+            box-shadow: inset -4px -4px 0 0 var(--green2), inset 4px 4px 0 0 #005a00;
+        }
+
+        /* ── SECTION LABELS ── */
+        .section-eyebrow { margin-bottom: 1rem; }
+        .tag {
+            display: inline-block;
+            font-size: 1rem;
+            color: var(--green);
+            border: 2px solid var(--green);
+            padding: 0.2rem 0.7rem;
+            letter-spacing: 0.1em;
+        }
+        .section-title {
+            font-size: clamp(1.8rem, 4vw, 2.8rem);
+            color: var(--yellow);
+            margin-bottom: 3rem;
+        }
+        .section-title::before { content: '>> '; color: var(--green); }
+
+        /* ════ HEADER ════ */
+        header {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            z-index: 1000;
+            background: var(--black);
+            border-bottom: 4px solid var(--white);
+        }
+        header .container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 60px;
+            gap: 1rem;
+        }
+        .logo {
+            font-family: var(--px);
+            font-size: 1.5rem;
+            color: var(--yellow);
+            text-decoration: none;
+            flex-shrink: 0;
+        }
+        nav { display: flex; gap: 0.25rem; }
+        nav a {
+            color: var(--gray2);
+            text-decoration: none;
+            font-family: var(--px);
+            font-size: 1rem;
+            padding: 0.3rem 0.6rem;
+        }
+        nav a::before { content: '> '; color: var(--green); }
+        nav a:hover { color: var(--yellow); }
+
+        .menu-btn {
+            display: none;
+            background: none;
+            border: 2px solid var(--white);
+            color: var(--white);
+            font-family: var(--px);
+            font-size: 1rem;
+            padding: 0.4rem 0.8rem;
+            cursor: pointer;
+        }
+        .mobile-nav {
+            display: none;
+            flex-direction: column;
+            position: fixed;
+            top: 64px; left: 0; right: 0;
+            background: var(--black);
+            border-bottom: 4px solid var(--white);
+            padding: 1rem 2rem;
+            gap: 0.5rem;
+            z-index: 999;
+        }
+        .mobile-nav.open { display: flex; }
+        .mobile-nav a {
+            color: var(--gray2);
+            text-decoration: none;
+            font-family: var(--px);
+            font-size: 1.2rem;
+            padding: 0.5rem 0;
+            border-bottom: 2px solid var(--gray);
+        }
+        .mobile-nav a:last-child { border-bottom: none; }
+        .mobile-nav a::before { content: '> '; color: var(--green); }
+        .mobile-nav a:hover { color: var(--yellow); }
+
+        /* ════ HERO ════ */
+        #hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            padding: 100px 0 60px;
+            position: relative;
+        }
+        .hero-insert {
+            font-size: 1.3rem;
+            color: var(--yellow);
+            letter-spacing: 0.12em;
+            margin-bottom: 2rem;
+        }
+        .hero-title {
+            font-size: clamp(3rem, 7vw, 5.5rem);
+            color: var(--white);
+            line-height: 1.2;
+            margin-bottom: 1rem;
+        }
+        .hero-cursor {
+            display: inline-block;
+            width: 0.45em;
+            height: 0.85em;
+            background: var(--green2);
+            vertical-align: text-bottom;
+            animation: blink 1s steps(1) infinite;
+        }
+        .hero-role {
+            font-size: 1.3rem;
+            color: var(--green);
+            margin-bottom: 1.5rem;
+            letter-spacing: 0.06em;
+        }
+        .hero-desc {
+            font-size: 1.15rem;
+            color: var(--gray2);
+            max-width: 580px;
+            line-height: 1.9;
+            margin-bottom: 2.5rem;
+        }
+        .hero-cta {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-bottom: 3rem;
+        }
+        .hero-stats {
+            display: inline-flex;
+            border: 4px solid var(--white);
+        }
+        .stat {
+            padding: 1rem 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        .stat + .stat { border-left: 4px solid var(--white); }
+        .stat-val {
+            font-size: 2.5rem;
+            color: var(--yellow);
+            line-height: 1;
+        }
+        .stat-val .ac { color: var(--green2); }
+        .stat-lbl {
+            font-size: 0.85rem;
+            color: var(--gray2);
+            letter-spacing: 0.05em;
+        }
+        .coin-text {
+            position: absolute;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 1.1rem;
+            color: var(--yellow);
+            animation: blink 1.2s steps(1) infinite;
+            white-space: nowrap;
+        }
+
+        /* ════ ABOUT ════ */
+        #about { background: #050505; }
+        .about-grid {
+            display: grid;
+            grid-template-columns: 200px 1fr;
+            gap: 3.5rem;
+            align-items: start;
+        }
+        .photo-sticky { position: sticky; top: 80px; }
+        .photo-frame {
+            border: 4px solid var(--white);
+            box-shadow: 6px 6px 0 0 var(--gray);
+            aspect-ratio: 3/4;
+            background: var(--black);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 0.6rem;
+            position: relative;
+        }
+        .photo-initials {
+            font-size: 3rem;
+            color: var(--green);
+        }
+        .photo-player { font-size: 0.85rem; color: var(--gray2); }
+        .location-badge {
+            position: absolute;
+            bottom: -4px; left: -4px; right: -4px;
+            background: var(--white);
+            color: var(--black);
+            font-size: 0.8rem;
+            padding: 0.4rem;
+            text-align: center;
+        }
+        .about-text {
+            font-size: 1.1rem;
+            color: var(--gray2);
+            line-height: 1.9;
+            margin-bottom: 1.5rem;
+        }
+        .about-highlights {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.75rem;
+        }
+        .hl-card {
+            border: 2px solid var(--green);
+            padding: 0.75rem;
+            display: flex;
+            align-items: flex-start;
+            gap: 0.5rem;
+        }
+        .hl-dot { color: var(--green); flex-shrink: 0; font-size: 1rem; }
+        .hl-text { font-size: 0.95rem; color: var(--gray2); line-height: 1.8; }
+
+        /* ════ EXPERIENCE ════ */
+        .timeline { padding-left: 1rem; }
+        .tl-item {
+            position: relative;
+            padding-bottom: 2.5rem;
+            border-left: 4px solid var(--green);
+            padding-left: 2rem;
+        }
+        .tl-item::before {
+            content: '■';
+            position: absolute;
+            left: -0.65rem; top: 0;
+            color: var(--yellow);
+            font-size: 0.55rem;
+        }
+        .tl-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-bottom: 1rem;
+        }
+        .tl-company { font-size: 1.5rem; color: var(--yellow); }
+        .tl-role { font-size: 1rem; color: var(--green); margin-top: 0.4rem; }
+        .tl-date {
+            font-size: 0.9rem;
+            color: var(--gray2);
+            border: 2px solid var(--gray2);
+            padding: 0.3rem 0.7rem;
+            flex-shrink: 0;
+            white-space: nowrap;
+        }
+        .tl-card {
+            border: 4px solid var(--white);
+            box-shadow: 4px 4px 0 0 var(--gray);
+            padding: 1.25rem;
+            background: #050505;
+        }
+        .tl-list { list-style: none; display: flex; flex-direction: column; gap: 0.6rem; }
+        .tl-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.6rem;
+            font-size: 1rem;
+            color: var(--gray2);
+            line-height: 1.8;
+        }
+        .tl-list li::before { content: '▸'; color: var(--green); flex-shrink: 0; }
+
+        /* ════ SKILLS ════ */
+        #skills { background: #050505; }
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1rem;
+        }
+        .skill-cat {
+            border: 4px solid var(--white);
+            box-shadow: 4px 4px 0 0 var(--gray);
+            padding: 1.25rem;
+            background: var(--black);
+        }
+        .skill-cat-title {
+            font-size: 1rem;
+            color: var(--yellow);
+            letter-spacing: 0.08em;
+            border-bottom: 2px solid var(--gray);
+            padding-bottom: 0.75rem;
+            margin-bottom: 1rem;
+        }
+        .skill-cat-title::before { content: '[ '; }
+        .skill-cat-title::after  { content: ' ]'; }
+        .skill-tags { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+        .skill-tag {
+            border: 2px solid var(--gray);
+            padding: 0.25rem 0.55rem;
+            font-size: 0.9rem;
+            color: var(--gray2);
+            cursor: default;
+            transition: border-color 0.1s, color 0.1s;
+        }
+        .skill-tag:hover { border-color: var(--green); color: var(--green); }
+
+        /* ════ CASES ════ */
+        .cases-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1rem;
+        }
+        .case-card {
+            border: 4px solid var(--white);
+            box-shadow: 6px 6px 0 0 var(--gray);
+            padding: 1.5rem;
+            background: var(--black);
+            transition: box-shadow 0.1s, transform 0.1s;
+        }
+        .case-card:hover {
+            box-shadow: 8px 8px 0 0 var(--green);
+            transform: translate(-2px, -2px);
+        }
+        .case-badge {
+            display: inline-block;
+            background: var(--green);
+            color: var(--black);
+            font-size: 0.9rem;
+            padding: 0.25rem 0.65rem;
+            margin-bottom: 1rem;
+        }
+        .case-title {
+            font-size: 1.05rem;
+            color: var(--white);
+            line-height: 1.7;
+            margin-bottom: 1.25rem;
+        }
+        .case-rows { display: flex; flex-direction: column; gap: 0.75rem; }
+        .case-row { display: flex; flex-direction: column; gap: 0.25rem; }
+        .case-lbl { font-size: 0.85rem; color: var(--green); letter-spacing: 0.06em; }
+        .case-val { font-size: 1rem; color: var(--gray2); line-height: 1.75; }
+        .case-val.highlight { color: var(--yellow); }
+        .case-divider { border: none; border-top: 2px solid var(--gray); margin: 0.25rem 0; }
+
+        /* ════ APPROACHES ════ */
+        #approaches { background: #050505; }
+        .approaches-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1rem;
+        }
+        .ap-card {
+            border: 4px solid var(--white);
+            box-shadow: 4px 4px 0 0 var(--gray);
+            padding: 1.25rem;
+            background: var(--black);
+        }
+        .ap-num { font-size: 1.5rem; color: var(--yellow); display: block; margin-bottom: 0.75rem; }
+        .ap-title { font-size: 1.1rem; color: var(--white); margin-bottom: 0.75rem; }
+        .ap-desc { font-size: 1rem; color: var(--gray2); line-height: 1.8; }
+
+        /* ════ TESTIMONIALS ════ */
+        .testimonials-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1rem;
+        }
+        .testi-card {
+            border: 4px solid var(--white);
+            box-shadow: 4px 4px 0 0 var(--gray);
+            padding: 1.5rem;
+            background: var(--black);
+        }
+        .testi-author { display: flex; align-items: center; gap: 0.75rem; }
+        .testi-avatar {
+            width: 52px; height: 52px;
+            border: 2px solid var(--green);
+            background: var(--black);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1rem;
+            color: var(--green);
+            flex-shrink: 0;
+        }
+        .testi-name { font-size: 1rem; color: var(--white); }
+        .testi-role { font-size: 0.85rem; color: var(--gray2); margin-top: 0.35rem; }
+
+        /* ════ CONTACT ════ */
+        #contact { background: #050505; }
+        .contact-grid {
+            display: grid;
+            grid-template-columns: 1fr 1.2fr;
+            gap: 3rem;
+            align-items: start;
+        }
+        .contact-heading {
+            font-size: 1.4rem;
+            color: var(--yellow);
+            line-height: 1.7;
+            margin-bottom: 1rem;
+        }
+        .contact-desc {
+            font-size: 1rem;
+            color: var(--gray2);
+            line-height: 1.9;
+            margin-bottom: 1.5rem;
+        }
+        .contact-links { display: flex; flex-direction: column; gap: 0.6rem; }
+        .contact-link {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            text-decoration: none;
+            color: var(--gray2);
+            font-size: 1rem;
+            padding: 0.6rem 0.75rem;
+            border: 2px solid var(--gray);
+            background: var(--black);
+            transition: border-color 0.1s, color 0.1s;
+        }
+        .contact-link:hover { color: var(--green); border-color: var(--green); }
+        .cl-icon {
+            font-size: 0.85rem;
+            color: var(--green);
+            border: 2px solid var(--green);
+            padding: 0.15rem 0.45rem;
+            flex-shrink: 0;
+            min-width: 30px;
+            text-align: center;
+        }
+        .contact-form-wrap {
+            border: 4px solid var(--white);
+            box-shadow: 6px 6px 0 0 var(--gray);
+            padding: 1.5rem;
+            background: var(--black);
+        }
+        .form-group { margin-bottom: 1rem; }
+        .form-label {
+            display: block;
+            font-size: 0.9rem;
+            color: var(--green);
+            letter-spacing: 0.07em;
+            margin-bottom: 0.4rem;
+        }
+        .form-label::before { content: '> '; }
+        .form-input, .form-textarea {
+            width: 100%;
+            background: var(--black);
+            border: 2px solid var(--gray);
+            padding: 0.6rem 0.75rem;
+            color: var(--white);
+            font-family: var(--px);
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.1s;
+            line-height: 1.75;
+        }
+        .form-input::placeholder, .form-textarea::placeholder { color: var(--gray); }
+        .form-input:focus, .form-textarea:focus { border-color: var(--green); }
+        .form-textarea { resize: vertical; min-height: 100px; }
+
+        /* ════ MODAL ════ */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.88);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-overlay.open { display: flex; }
+        .modal {
+            background: var(--black);
+            border: 4px solid var(--white);
+            box-shadow: 8px 8px 0 0 var(--gray);
+            padding: 2rem;
+            width: 100%;
+            max-width: 360px;
+            margin: 1rem;
+            position: relative;
+        }
+        .modal-close {
+            position: absolute;
+            top: 0.75rem; right: 0.75rem;
+            background: var(--red);
+            border: 0;
+            color: var(--white);
+            font-family: var(--px);
+            font-size: 0.9rem;
+            padding: 0.3rem 0.6rem;
+            cursor: pointer;
+        }
+        .modal-tg-icon { font-size: 2rem; margin-bottom: 1rem; }
+        .modal-title { font-size: 1.4rem; color: var(--yellow); margin-bottom: 0.75rem; }
+        .modal-desc {
+            font-size: 1rem;
+            color: var(--gray2);
+            line-height: 1.9;
+            margin-bottom: 1rem;
+        }
+        .modal-handle {
+            font-size: 1.1rem;
+            color: var(--green);
+            margin-bottom: 1.25rem;
+        }
+        .modal-handle::before { content: '>> '; }
+
+        /* ════ FOOTER ════ */
+        footer {
+            background: var(--black);
+            border-top: 4px solid var(--white);
+            padding: 1.5rem 0;
+        }
+        .footer-inner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        .footer-copy { font-size: 0.9rem; color: var(--gray2); }
+        .footer-copy .ac { color: var(--yellow); }
+        .footer-links { display: flex; gap: 1.25rem; }
+        .footer-links a {
+            font-size: 0.9rem;
+            color: var(--gray2);
+            text-decoration: none;
+        }
+        .footer-links a::before { content: '[ '; }
+        .footer-links a::after  { content: ' ]'; }
+        .footer-links a:hover { color: var(--green); }
+
+        /* ════ RESPONSIVE ════ */
+        @media (max-width: 860px) {
+            nav { display: none; }
+            .menu-btn { display: block; }
+            header .btn-nes { display: none; }
+            .about-grid { grid-template-columns: 1fr; }
+            .photo-sticky { position: static; max-width: 160px; }
+            .about-highlights { grid-template-columns: 1fr; }
+            .contact-grid { grid-template-columns: 1fr; gap: 2rem; }
+            .hero-stats { flex-direction: column; display: flex; }
+            .stat + .stat { border-left: none; border-top: 4px solid var(--white); }
+        }
+        @media (max-width: 520px) {
+            section { padding: 3rem 0; }
+            .container { padding: 0 1rem; }
+            .hero-title { font-size: 2rem; }
+            .hero-cta { flex-direction: column; }
+            .cases-grid { grid-template-columns: 1fr; }
+            .approaches-grid { grid-template-columns: 1fr; }
+        }
+
+        /* ════ GAME ZONE ════ */
+        #game-zone { background: var(--black); }
+        .game-launcher { display: flex; justify-content: center; }
+        .game-terminal {
+            border: 4px solid var(--yellow);
+            box-shadow: 6px 6px 0 0 var(--gray);
+            padding: 2rem 2.5rem;
+            background: var(--black);
+            text-align: center;
+            max-width: 520px;
+            width: 100%;
+        }
+        .gt-title {
+            font-size: 2rem;
+            color: var(--yellow);
+            margin-bottom: 0.75rem;
+            letter-spacing: 0.08em;
+        }
+        .gt-sub {
+            font-size: 1rem;
+            color: var(--green);
+            margin-bottom: 1rem;
+            line-height: 1.9;
+        }
+        .gt-help {
+            font-size: 0.9rem;
+            color: var(--gray2);
+            margin-bottom: 1.5rem;
+            line-height: 2;
+            border: 2px solid var(--gray);
+            padding: 0.6rem 0.75rem;
+        }
+
+        /* ── Game Overlay ── */
+        #gameOverlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 8000;
+        }
+        #gameOverlay.active { display: block; }
+        #gameCanvas {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            display: block;
+            touch-action: none;
+        }
+        .game-hud {
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            padding: 0.5rem 1.25rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(0,0,0,0.92);
+            border-bottom: 3px solid var(--green);
+            font-family: var(--px);
+            font-size: 1rem;
+            color: var(--green);
+            z-index: 1;
+            pointer-events: none;
+        }
+        .game-hud button { pointer-events: all; }
+        .gh-score span, .gh-kills span { color: var(--yellow); }
+        #gameWin {
+            display: none;
+            position: absolute;
+            inset: 0;
+            background: rgba(0,0,0,0.93);
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 1.5rem;
+            z-index: 2;
+        }
+        #gameWin.visible { display: flex; }
+        .gw-title {
+            font-size: clamp(1.5rem, 5vw, 3.5rem);
+            color: var(--yellow);
+            text-align: center;
+            letter-spacing: 0.1em;
+            animation: blink 0.7s steps(1) infinite;
+        }
+        .gw-stat { font-size: 1.3rem; color: var(--green); }
+    </style>
+</head>
+<body>
+
+<!-- MODAL: Telegram -->
+<div class="modal-overlay" id="tgModal" onclick="closeTgModal(event)">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+        <button class="modal-close" onclick="closeTgModal()" aria-label="Закрыть">✕ CLOSE</button>
+        <div class="modal-tg-icon">[TG]</div>
+        <h2 class="modal-title" id="modalTitle">TELEGRAM</h2>
+        <p class="modal-desc">Расскажите о проекте или предложении — отвечаю быстро, обсудим детали в удобном формате.</p>
+        <div class="modal-handle">@sergeyrenton</div>
+        <a href="https://t.me/sergeyrenton" target="_blank" rel="noopener"
+           class="btn-nes btn-nes-green" style="width:100%;text-align:center;display:block;"
+           onclick="closeTgModal()">ОТКРЫТЬ TELEGRAM >></a>
+    </div>
+</div>
+
+<!-- HEADER -->
+<header>
+    <div class="container">
+        <a href="#hero" class="logo">>> SP.EXE</a>
+        <nav>
+            <a href="#about">ОБО МНЕ</a>
+            <a href="#experience">ОПЫТ</a>
+            <a href="#skills">НАВЫКИ</a>
+            <a href="#cases">КЕЙСЫ</a>
+            <a href="#contact">КОНТАКТ</a>
+        </nav>
+        <a href="__CV (10).pdf" download class="btn-nes">СКАЧАТЬ CV</a>
+        <a href="#game-zone" class="btn-nes" style="border-color:#D82800;color:#D82800;">🗑 УДАЛИТЬ CV</a>
+        <button class="menu-btn" onclick="toggleMenu()">MENU</button>
+    </div>
+</header>
+
+<div class="mobile-nav" id="mobileNav">
+    <a href="#about"      onclick="closeMenu()">ОБО МНЕ</a>
+    <a href="#experience" onclick="closeMenu()">ОПЫТ РАБОТЫ</a>
+    <a href="#skills"     onclick="closeMenu()">НАВЫКИ</a>
+    <a href="#cases"      onclick="closeMenu()">КЕЙСЫ</a>
+    <a href="#contact"    onclick="closeMenu()">КОНТАКТЫ</a>
+    <a href="__CV (10).pdf" download>СКАЧАТЬ CV</a>
+</div>
+
+<!-- HERO -->
+<section id="hero">
+    <div class="container">
+        <div class="hero-inner">
+            <div class="hero-insert fade-up">★ INSERT COIN ★</div>
+            <h1 class="hero-title fade-up d1">СЕРГЕЙ<br>ПОТАПОВ<span class="hero-cursor"></span></h1>
+            <p class="hero-role fade-up d2">// IT · DIGITAL · EDTECH · CRM</p>
+            <p class="hero-desc fade-up d2">
+                Управляю проектами полного цикла — от постановки задач до запуска.
+                Координирую кросс-функциональные команды, запускаю партнёрские
+                спецпроекты, держу под контролем сроки, бюджеты и качество.
+            </p>
+            <div class="hero-cta fade-up d3">
+                <button onclick="openTgModal()" class="btn-nes btn-nes-yellow">PRESS START →</button>
+                <a href="__CV (10).pdf" download class="btn-nes">СКАЧАТЬ CV</a>
+            </div>
+            <div class="hero-stats fade-up d4">
+                <div class="stat">
+                    <div class="stat-val"><span class="counter" data-target="3">0</span><span class="ac">+</span></div>
+                    <div class="stat-lbl">ГОДА ОПЫТА</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-val"><span class="counter" data-target="10">0</span><span class="ac">+</span></div>
+                    <div class="stat-lbl">ПРОЕКТОВ</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-val"><span class="counter" data-target="20">0</span></div>
+                    <div class="stat-lbl">КОМАНДА</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="coin-text">▼ SCROLL DOWN ▼</div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+    <div class="container">
+        <div class="section-eyebrow fade-up"><span class="tag">STAGE 01</span></div>
+        <h2 class="section-title fade-up">ОБО МНЕ</h2>
+        <div class="about-grid">
+            <div class="photo-sticky fade-up d1">
+                <div class="photo-frame">
+                    <span class="photo-initials">СП</span>
+                    <div class="photo-player">PLAYER 1</div>
+                    <div class="location-badge">[СПб] САНКТ-ПЕТЕРБУРГ</div>
+                </div>
+            </div>
+            <div class="about-content">
+                <p class="about-text fade-up">
+                    Project Manager с опытом в EdTech, CRM и digital-проектах. Координировал кросс-функциональные
+                    команды до 15–20 человек, запускал партнёрские проекты совместно со Сбербанком, Ростикс,
+                    Вкусно и Точка и другими брендами.
+                </p>
+                <p class="about-text fade-up d1">
+                    Работал с CRM-коммуникациями, Telegram-ботами, лендингами, digital-кампаниями и проектами
+                    полного цикла — от идеи и roadmap до запуска, аналитики и поддержки пользователей.
+                </p>
+                <div class="about-highlights">
+                    <div class="hl-card fade-up d1"><span class="hl-dot">■</span><span class="hl-text">Команды до 15–20 человек</span></div>
+                    <div class="hl-card fade-up d2"><span class="hl-dot">■</span><span class="hl-text">Разработка, маркетинг, дизайн, PR</span></div>
+                    <div class="hl-card fade-up d3"><span class="hl-dot">■</span><span class="hl-text">Лендинги, email, Telegram-боты</span></div>
+                    <div class="hl-card fade-up d4"><span class="hl-dot">■</span><span class="hl-text">Agile: спринты, планирования, ретро</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- EXPERIENCE -->
+<section id="experience">
+    <div class="container">
+        <div class="section-eyebrow fade-up"><span class="tag">STAGE 02</span></div>
+        <h2 class="section-title fade-up">ОПЫТ РАБОТЫ</h2>
+        <div class="timeline">
+            <div class="tl-item fade-up">
+                <div class="tl-head">
+                    <div>
+                        <div class="tl-company">НЕТОЛОГИЯ</div>
+                        <div class="tl-role">PROJECT MANAGER / IT PROJECT MANAGER</div>
+                    </div>
+                    <div class="tl-date">03.2023 — 05.2026</div>
+                </div>
+                <div class="tl-card">
+                    <ul class="tl-list">
+                        <li>Запустил 10+ партнёрских digital-проектов совместно со Сбербанком, Ростикс и Вкусно и Точка</li>
+                        <li>Координировал кросс-функциональные команды до 15–20 человек: разработка, маркетинг, дизайн, PR, подрядчики</li>
+                        <li>Руководил запуском лендингов, email-коммуникаций, Telegram-ботов и спецпроектов</li>
+                        <li>Контролировал сроки, бюджеты, качество реализации и проектную документацию</li>
+                        <li>Работал с аналитикой, метриками и отчётностью по проектам</li>
+                        <li>Участвовал в Agile-процессах: спринты, планирования, ретро</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- SKILLS -->
+<section id="skills">
+    <div class="container">
+        <div class="section-eyebrow fade-up"><span class="tag">STAGE 03</span></div>
+        <h2 class="section-title fade-up">НАВЫКИ И ИНСТРУМЕНТЫ</h2>
+        <div class="skills-grid">
+            <div class="skill-cat fade-up">
+                <div class="skill-cat-title">УПРАВЛЕНИЕ ПРОЕКТАМИ</div>
+                <div class="skill-tags">
+                    <span class="skill-tag">Agile</span>
+                    <span class="skill-tag">Scrum</span>
+                    <span class="skill-tag">Roadmaps</span>
+                    <span class="skill-tag">Бюджетирование</span>
+                    <span class="skill-tag">Управление рисками</span>
+                    <span class="skill-tag">Стейкхолдеры</span>
+                </div>
+            </div>
+            <div class="skill-cat fade-up d1">
+                <div class="skill-cat-title">ИНСТРУМЕНТЫ</div>
+                <div class="skill-tags">
+                    <span class="skill-tag">Jira</span>
+                    <span class="skill-tag">Notion</span>
+                    <span class="skill-tag">Trello</span>
+                    <span class="skill-tag">Miro</span>
+                    <span class="skill-tag">Figma</span>
+                    <span class="skill-tag">Google Docs</span>
+                    <span class="skill-tag">Google Sheets</span>
+                    <span class="skill-tag">Excel</span>
+                    <span class="skill-tag">Tilda</span>
+                    <span class="skill-tag">GetCourse</span>
+                </div>
+            </div>
+            <div class="skill-cat fade-up d2">
+                <div class="skill-cat-title">DIGITAL / MARKETING</div>
+                <div class="skill-tags">
+                    <span class="skill-tag">Digital Campaigns</span>
+                    <span class="skill-tag">CJM</span>
+                    <span class="skill-tag">Influencer Marketing</span>
+                    <span class="skill-tag">Email-маркетинг</span>
+                    <span class="skill-tag">Telegram-боты</span>
+                    <span class="skill-tag">Mindbox</span>
+                    <span class="skill-tag">ОРД/ЕРИД</span>
+                </div>
+            </div>
+            <div class="skill-cat fade-up d3">
+                <div class="skill-cat-title">АНАЛИТИКА</div>
+                <div class="skill-tags">
+                    <span class="skill-tag">FineBI</span>
+                    <span class="skill-tag">Яндекс.Метрика</span>
+                    <span class="skill-tag">Проектные метрики</span>
+                    <span class="skill-tag">Отчётность</span>
+                    <span class="skill-tag">Integrations</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CASES -->
+<section id="cases">
+    <div class="container">
+        <div class="section-eyebrow fade-up"><span class="tag">STAGE 04</span></div>
+        <h2 class="section-title fade-up">КЕЙСЫ И ПРОЕКТЫ</h2>
+        <div class="cases-grid">
+            <div class="case-card fade-up">
+                <div class="case-badge">★ СБЕРБАНК</div>
+                <h3 class="case-title">Digital Marathon — партнёрский образовательный спецпроект</h3>
+                <div class="case-rows">
+                    <div class="case-row">
+                        <span class="case-lbl">> О ПРОЕКТЕ:</span>
+                        <span class="case-val">Партнёрский образовательный проект Нетологии и Сбербанка для участников «Цифрового марафона». Бесплатные digital-курсы, интеграция между платформами.</span>
+                    </div>
+                    <div class="case-row">
+                        <span class="case-lbl">> КОМАНДА:</span>
+                        <span class="case-val">15–20 человек · Jira, Notion, Google Workspace, Telegram</span>
+                    </div>
+                    <div class="case-row">
+                        <span class="case-lbl">> РЕЗУЛЬТАТ:</span>
+                        <span class="case-val highlight">Реализована интеграция между платформами, организована поддержка пользователей, выстроена коммуникация с партнёрами.</span>
+                    </div>
+                    <hr class="case-divider">
+                    <div class="case-row">
+                        <span class="case-lbl">> ПРОЕКТ:</span>
+                        <span class="case-val"><a href="https://it-marathon.21-school.ru/" target="_blank" rel="noopener" style="color:var(--green);text-decoration:none;">it-marathon.21-school.ru →</a></span>
+                    </div>
+                </div>
+            </div>
+            <div class="case-card fade-up d1">
+                <div class="case-badge">★ SOCIAL EDTECH</div>
+                <h3 class="case-title">Академия взрослой жизни — образовательный проект для подростков</h3>
+                <div class="case-rows">
+                    <div class="case-row">
+                        <span class="case-lbl">> О ПРОЕКТЕ:</span>
+                        <span class="case-val">Социальный EdTech-проект Нетологии и фонда «Открывая горизонты» для подростков и молодых людей.</span>
+                    </div>
+                    <div class="case-row">
+                        <span class="case-lbl">> ФОРМАТ:</span>
+                        <span class="case-val">Видеоуроки, лендинг, онлайн-занятия, influencer marketing</span>
+                    </div>
+                    <div class="case-row">
+                        <span class="case-lbl">> РЕЗУЛЬТАТ:</span>
+                        <span class="case-val highlight">Проект запущен от идеи до релиза: съёмки с экспертами, SMM и influencer-продвижение.</span>
+                    </div>
+                    <hr class="case-divider">
+                    <div class="case-row">
+                        <span class="case-lbl">> ПРОЕКТ:</span>
+                        <span class="case-val"><a href="https://netology.ru/programs/academy-vzrosloy-zhizni" target="_blank" rel="noopener" style="color:var(--green);text-decoration:none;">netology.ru → Академия взрослой жизни</a></span>
+                    </div>
+                </div>
+            </div>
+            <div class="case-card fade-up d2">
+                <div class="case-badge">★ СПЕЦПРОЕКТ</div>
+                <h3 class="case-title">15 лет Нетологии — ностальгический интерактивный лендинг</h3>
+                <div class="case-rows">
+                    <div class="case-row">
+                        <span class="case-lbl">> О ПРОЕКТЕ:</span>
+                        <span class="case-val">Digital-спецпроект к 15-летию Нетологии с интерактивным лендингом в стилистике 2011 года.</span>
+                    </div>
+                    <div class="case-row">
+                        <span class="case-lbl">> ФОРМАТ:</span>
+                        <span class="case-val">Интерактивный лендинг, Telegram-бот, CRM-цепочки, розыгрыш и engagement-механики</span>
+                    </div>
+                    <div class="case-row">
+                        <span class="case-lbl">> РЕЗУЛЬТАТ:</span>
+                        <span class="case-val highlight">Разработаны CRM-цепочки и сценарии Telegram-бота; проект запущен в срок.</span>
+                    </div>
+                    <hr class="case-divider">
+                    <div class="case-row">
+                        <span class="case-lbl">> ПРОЕКТ:</span>
+                        <span class="case-val"><a href="https://netology.ru/netology15years" target="_blank" rel="noopener" style="color:var(--green);text-decoration:none;">netology.ru/netology15years →</a></span>
+                    </div>
+                </div>
+            </div>
+            <div class="case-card fade-up">
+                <div class="case-badge">★ TELEGRAM-БОТ</div>
+                <h3 class="case-title">«Ну что, начнём?» — мотивационный Telegram-бот</h3>
+                <div class="case-rows">
+                    <div class="case-row">
+                        <span class="case-lbl">> О ПРОЕКТЕ:</span>
+                        <span class="case-val">Мотивационный Telegram-бот с целями по спорту, питанию, стилю, накоплениям и саморазвитию.</span>
+                    </div>
+                    <div class="case-row">
+                        <span class="case-lbl">> ФОРМАТ:</span>
+                        <span class="case-val">Telegram-бот, CRM-коммуникации, influencer marketing, gamification-механики</span>
+                    </div>
+                    <div class="case-row">
+                        <span class="case-lbl">> РЕЗУЛЬТАТ:</span>
+                        <span class="case-val highlight">Разработана концепция и roadmap; подключены партнёры с офферами; запущены пользовательские сценарии.</span>
+                    </div>
+                    <hr class="case-divider">
+                    <div class="case-row">
+                        <span class="case-lbl">> ПРОЕКТ:</span>
+                        <span class="case-val"><a href="https://netology.ru/rightnow" target="_blank" rel="noopener" style="color:var(--green);text-decoration:none;">netology.ru/rightnow →</a></span>
+                    </div>
+                </div>
+            </div>
+            <div class="case-card fade-up d1">
+                <div class="case-badge">★ WELLDONE</div>
+                <h3 class="case-title">Welldone — интерактивный спецпроект о выгорании</h3>
+                <div class="case-rows">
+                    <div class="case-row">
+                        <span class="case-lbl">> О ПРОЕКТЕ:</span>
+                        <span class="case-val">Фановый digital-спецпроект о выгорании с интерактивным тестом и рекомендациями от психологов.</span>
+                    </div>
+                    <div class="case-row">
+                        <span class="case-lbl">> ФОРМАТ:</span>
+                        <span class="case-val">Интерактивный лендинг, тест, influencer marketing, SMM-продвижение</span>
+                    </div>
+                    <div class="case-row">
+                        <span class="case-lbl">> РЕЗУЛЬТАТ:</span>
+                        <span class="case-val highlight">Запущен интерактивный лендинг с тестом; организовано influencer-продвижение и reels.</span>
+                    </div>
+                    <hr class="case-divider">
+                    <div class="case-row">
+                        <span class="case-lbl">> ПРОЕКТ:</span>
+                        <span class="case-val"><a href="https://netology.ru/welldone" target="_blank" rel="noopener" style="color:var(--green);text-decoration:none;">netology.ru/welldone →</a></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- APPROACHES -->
+<section id="approaches">
+    <div class="container">
+        <div class="section-eyebrow fade-up"><span class="tag">STAGE 05</span></div>
+        <h2 class="section-title fade-up">ПОДХОДЫ В РАБОТЕ</h2>
+        <div class="approaches-grid">
+            <div class="ap-card fade-up">
+                <span class="ap-num">01</span>
+                <h3 class="ap-title">AGILE / SCRUM</h3>
+                <p class="ap-desc">Работаю итерациями, провожу спринты, планирования и ретро. Фокус на результате и быстрой адаптации к изменениям.</p>
+            </div>
+            <div class="ap-card fade-up d1">
+                <span class="ap-num">02</span>
+                <h3 class="ap-title">УПРАВЛЕНИЕ КОМАНДОЙ</h3>
+                <p class="ap-desc">Выстраиваю коммуникацию между разработкой, дизайном, маркетингом и внешними подрядчиками.</p>
+            </div>
+            <div class="ap-card fade-up d2">
+                <span class="ap-num">03</span>
+                <h3 class="ap-title">РАБОТА С МЕТРИКАМИ</h3>
+                <p class="ap-desc">Отслеживаю KPI проекта, веду аналитику и отчётность, принимаю решения на основе данных.</p>
+            </div>
+            <div class="ap-card fade-up d3">
+                <span class="ap-num">04</span>
+                <h3 class="ap-title">CJM И КЛИЕНТСКИЙ ПУТЬ</h3>
+                <p class="ap-desc">Строю карты пользовательских сценариев, нахожу точки роста и узкие места в воронке.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section id="testimonials">
+    <div class="container">
+        <div class="section-eyebrow fade-up"><span class="tag">STAGE 06</span></div>
+        <h2 class="section-title fade-up">РЕКОМЕНДАЦИИ</h2>
+        <p class="about-text fade-up" style="margin-bottom:2rem;">Готов предоставить контакты коллег, которые могут дать рекомендацию.</p>
+        <div class="testimonials-grid">
+            <div class="testi-card fade-up">
+                <div class="testi-author">
+                    <div class="testi-avatar">АТ</div>
+                    <div>
+                        <div class="testi-name">АНАСТАСИЯ ТИМОНИЧЕВА</div>
+                        <div class="testi-role">Бренд-директор, Нетология</div>
+                    </div>
+                </div>
+                <a href="https://t.me/Simona_Tim" target="_blank" rel="noopener"
+                   class="btn-nes" style="width:100%;text-align:center;display:block;margin-top:1.25rem;">
+                    >> TELEGRAM →
+                </a>
+            </div>
+            <div class="testi-card fade-up d1">
+                <div class="testi-author">
+                    <div class="testi-avatar">ЯА</div>
+                    <div>
+                        <div class="testi-name">ЯНА АЛЕКСАНДРОВА</div>
+                        <div class="testi-role">Руководитель спецпроектов</div>
+                    </div>
+                </div>
+                <a href="https://t.me/iaaleksandrova" target="_blank" rel="noopener"
+                   class="btn-nes" style="width:100%;text-align:center;display:block;margin-top:1.25rem;">
+                    >> TELEGRAM →
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+    <div class="container">
+        <div class="section-eyebrow fade-up"><span class="tag">STAGE 07</span></div>
+        <h2 class="section-title fade-up">СВЯЗАТЬСЯ СО МНОЙ</h2>
+        <div class="contact-grid">
+            <div class="fade-up d1">
+                <h3 class="contact-heading">ОТКРЫТ К НОВЫМ<br>ПРОЕКТАМ</h3>
+                <p class="contact-desc">
+                    Ищу интересные задачи в IT, digital и EdTech. Если нужен PM с опытом
+                    запуска продуктов, партнёрских кампаний и управления командами — пишите.
+                </p>
+                <div class="contact-links">
+                    <a href="mailto:sergeyrenton@gmail.com" class="contact-link">
+                        <span class="cl-icon">@</span>sergeyrenton@gmail.com
+                    </a>
+                    <a href="https://t.me/sergeyrenton" class="contact-link" target="_blank" rel="noopener">
+                        <span class="cl-icon">TG</span>@sergeyrenton
+                    </a>
+                    <a href="tel:+79130923038" class="contact-link">
+                        <span class="cl-icon">☎</span>+7 913 092 30 38
+                    </a>
+                    <a href="__CV (10).pdf" download class="contact-link">
+                        <span class="cl-icon">CV</span>Скачать резюме PDF
+                    </a>
+                </div>
+            </div>
+            <div class="contact-form-wrap fade-up d2">
+                <form id="contactForm" onsubmit="handleSubmit(event)">
+                    <div class="form-group">
+                        <label class="form-label" for="fname">ИМЯ</label>
+                        <input type="text" id="fname" class="form-input" placeholder="ВАШЕ ИМЯ" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="femail">EMAIL</label>
+                        <input type="email" id="femail" class="form-input" placeholder="YOUR@EMAIL.COM" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="fmsg">СООБЩЕНИЕ</label>
+                        <textarea id="fmsg" class="form-textarea" placeholder="РАССКАЖИТЕ О ПРОЕКТЕ..." required></textarea>
+                    </div>
+                    <button type="submit" class="btn-nes btn-nes-green" style="width:100%;text-align:center;" id="submitBtn">
+                        ОТПРАВИТЬ >>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- GAME ZONE -->
+<section id="game-zone">
+    <div class="container">
+        <div class="section-eyebrow fade-up"><span class="tag" style="color:#D82800;border-color:#D82800;">⚠ ОПАСНО</span></div>
+        <h2 class="section-title fade-up" style="color:#D82800;">УДАЛИТЬ CV</h2>
+        <div class="game-launcher fade-up">
+            <div class="game-terminal" style="border-color:#D82800;">
+                <div class="gt-title" style="color:#D82800;">>> УДАЛИТЬ CV БЕЗВОЗВРАТНО? &lt;&lt;</div>
+                <div class="gt-sub">Уничтожь все данные из резюме.<br>Это действие нельзя отменить.</div>
+                <div class="gt-help">
+                    СТРЕЛКИ ← → — движение &nbsp;|&nbsp; ПРОБЕЛ / Z — огонь<br>
+                    СТРЕЛКИ ↑ ↓ — прокрутка &nbsp;|&nbsp; ESC — выйти
+                </div>
+                <button class="btn-nes" onclick="startGame()" style="background:#D82800;color:#FCFCFC;border-color:#FF4444;">🗑 УДАЛИТЬ CV</button>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+    <div class="container">
+        <div class="footer-inner">
+            <div class="footer-copy"><span class="ac">>> </span>СЕРГЕЙ ПОТАПОВ © 2026 — PROJECT MANAGER</div>
+            <div class="footer-links">
+                <a href="mailto:sergeyrenton@gmail.com">EMAIL</a>
+                <a href="https://t.me/sergeyrenton" target="_blank" rel="noopener">TELEGRAM</a>
+                <a href="__CV (10).pdf" download>CV.PDF</a>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- GAME OVERLAY -->
+<div id="gameOverlay">
+    <canvas id="gameCanvas"></canvas>
+    <div class="game-hud">
+        <div class="gh-score">SCORE: <span id="gameScore">0</span></div>
+        <div class="gh-kills">STAGE <span id="gameStage">01/08</span> &nbsp;|&nbsp; <span id="gameKills">0/0</span></div>
+        <div class="gh-lives" id="gameLives" style="letter-spacing:0.15em;color:#D82800;">&#9829;&#9829;&#9829;</div>
+        <button class="btn-nes" id="muteBtn" onclick="toggleMute()" style="font-size:0.85rem;padding:0.3rem 0.6rem;" title="Вкл/выкл звук">&#9834; SFX</button>
+        <button class="btn-nes" onclick="exitGame()" style="font-size:0.85rem;padding:0.3rem 0.6rem;">ESC EXIT</button>
+    </div>
+    <div id="gameWin">
+        <div class="gw-title">★ MISSION COMPLETE! ★</div>
+        <div class="gw-stat">ФИНАЛЬНЫЙ СЧЁТ: <span id="finalScore">0</span></div>
+        <button class="btn-nes btn-nes-yellow" style="margin-top:0.5rem;" onclick="exitGame()">▶ ВЫЙТИ</button>
+    </div>
+</div>
+
+<script>
+    let modalTrigger = null;
+    function openTgModal() {
+        modalTrigger = document.activeElement;
+        document.getElementById('tgModal').classList.add('open');
+        document.body.style.overflow = 'hidden';
+        document.querySelector('.modal-close').focus();
+    }
+    function closeTgModal(e) {
+        if (e && e.target !== e.currentTarget) return;
+        document.getElementById('tgModal').classList.remove('open');
+        document.body.style.overflow = '';
+        if (modalTrigger) { modalTrigger.focus(); modalTrigger = null; }
+    }
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeTgModal(); });
+
+    function toggleMenu() { document.getElementById('mobileNav').classList.toggle('open'); }
+    function closeMenu()  { document.getElementById('mobileNav').classList.remove('open'); }
+
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    if (prefersReducedMotion) {
+        document.querySelectorAll('.fade-up').forEach(el => el.classList.add('visible'));
+        document.querySelectorAll('.counter').forEach(el => { el.textContent = el.dataset.target; });
+    } else {
+        const revealObs = new IntersectionObserver((entries) => {
+            entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+        }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+        document.querySelectorAll('.fade-up').forEach(el => revealObs.observe(el));
+        document.querySelectorAll('#hero .fade-up').forEach((el, i) => {
+            setTimeout(() => el.classList.add('visible'), 80 + i * 100);
+        });
+
+        const counterObs = new IntersectionObserver((entries) => {
+            entries.forEach(e => {
+                if (e.isIntersecting) { animateCounter(e.target); counterObs.unobserve(e.target); }
+            });
+        }, { threshold: 0.6 });
+        document.querySelectorAll('.counter').forEach(el => counterObs.observe(el));
+    }
+
+    function animateCounter(el) {
+        const target = +el.dataset.target;
+        const step = target / (1600 / 16);
+        let cur = 0;
+        const t = setInterval(() => {
+            cur += step;
+            if (cur >= target) { el.textContent = target; clearInterval(t); }
+            else { el.textContent = Math.floor(cur); }
+        }, 16);
+    }
+
+    // ════ RETRO AUDIO ════
+    const AUDIO = (() => {
+        let ac = null, muted = false;
+        function getCtx() {
+            if (!ac) ac = new (window.AudioContext || window.webkitAudioContext)();
+            if (ac.state === 'suspended') ac.resume();
+            return ac;
+        }
+        function beep(freq, dur, type = 'square', vol = 0.12, freqEnd = null) {
+            if (muted) return;
+            try {
+                const c = getCtx();
+                const osc = c.createOscillator(), gain = c.createGain();
+                osc.connect(gain); gain.connect(c.destination);
+                osc.type = type;
+                osc.frequency.setValueAtTime(freq, c.currentTime);
+                if (freqEnd !== null) osc.frequency.linearRampToValueAtTime(freqEnd, c.currentTime + dur);
+                gain.gain.setValueAtTime(vol, c.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, c.currentTime + dur);
+                osc.start(c.currentTime); osc.stop(c.currentTime + dur + 0.01);
+            } catch(e) {}
+        }
+        function noise(dur, vol = 0.12) {
+            if (muted) return;
+            try {
+                const c = getCtx();
+                const buf = c.createBuffer(1, Math.floor(c.sampleRate * dur), c.sampleRate);
+                const d = buf.getChannelData(0);
+                for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+                const src = c.createBufferSource(), gain = c.createGain();
+                src.buffer = buf; src.connect(gain); gain.connect(c.destination);
+                gain.gain.setValueAtTime(vol, c.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, c.currentTime + dur);
+                src.start(c.currentTime);
+            } catch(e) {}
+        }
+        function seq(notes) {
+            notes.forEach(([freq, delay, dur, vol]) =>
+                setTimeout(() => beep(freq, dur || 0.1, 'square', vol || 0.12), delay || 0));
+        }
+        return {
+            get muted() { return muted; },
+            toggleMute() { muted = !muted; },
+            resume()       { getCtx(); },
+            shoot()        { beep(880, 0.07, 'square', 0.08, 440); },
+            hit()          { beep(300, 0.09, 'square', 0.12, 150); },
+            bossHit()      { beep(200, 0.12, 'square', 0.15, 80); },
+            explode()      { noise(0.15, 0.15); beep(150, 0.1, 'square', 0.07); },
+            bossExplode()  { noise(0.28, 0.22); beep(90, 0.18, 'square', 0.1); },
+            playerHit()    { seq([[440,0,0.06,0.2],[300,70,0.06,0.18],[180,140,0.1,0.15]]); },
+            gameOver()     { seq([[330,0,0.15,0.15],[220,180,0.15,0.15],[165,360,0.15,0.15],[110,540,0.4,0.18]]); },
+            stageClear()   { seq([[440,0,0.1,0.12],[550,100,0.1,0.12],[660,200,0.1,0.12],[880,300,0.2,0.14]]); },
+            gameWin()      { seq([[440,0],[550,90],[660,180],[880,270],[660,400],[880,580],[1100,760,0.25,0.15]]); },
+        };
+    })();
+
+    // ════ GAME 1945 — 8 LEVELS + BOSS + LIVES + ENEMY FIRE ════
+    const GAME = (() => {
+        const PW = 25, PH = 55, PIX = 5;
+        const FONT = "18px 'VT323', monospace";
+        const ROW_H = 36, ROW_GAP = 14, BLOCK_GAP = 8, PAD_X = 14;
+        const MAX_LIVES = 3, INVINCIBLE_DURATION = 130;
+
+        // 8 levels — one per resume section
+        const LEVELS = [
+            {
+                tag: 'STAGE 01', name: 'ГЕРОЙ', hint: '— СЕРГЕЙ ПОТАПОВ —',
+                rows: [
+                    { color: '#FCE000', items: ['СЕРГЕЙ', 'ПОТАПОВ'] },
+                    { color: '#FCFCFC', items: ['PROJECT MANAGER'] },
+                    { color: '#00E000', items: ['IT', 'DIGITAL', 'EDTECH', 'CRM'] },
+                    { color: '#ADADAD', items: ['3+ ГОДА ОПЫТА', '10+ ПРОЕКТОВ', 'КОМАНДА 20 ЧЕЛ'] },
+                ]
+            },
+            {
+                tag: 'STAGE 02', name: 'ОБО МНЕ', hint: '— БИОГРАФИЯ —',
+                rows: [
+                    { color: '#00E000', items: ['EdTech', 'CRM', 'Digital'] },
+                    { color: '#FCE000', items: ['15-20 ЧЕЛ', 'КРОСС-ФУНКЦ.', 'ПОДРЯДЧИКИ'] },
+                    { color: '#FCFCFC', items: ['РАЗРАБОТКА', 'МАРКЕТИНГ', 'ДИЗАЙН', 'PR'] },
+                    { color: '#ADADAD', items: ['ЛЕНДИНГИ', 'EMAIL', 'TG-БОТЫ', 'КАМПАНИИ'] },
+                ]
+            },
+            {
+                tag: 'STAGE 03', name: 'ОПЫТ', hint: '— НЕТОЛОГИЯ 2023–2026 —',
+                rows: [
+                    { color: '#FCE000', items: ['НЕТОЛОГИЯ'] },
+                    { color: '#00E000', items: ['PROJECT MANAGER', 'IT PROJECT MANAGER'] },
+                    { color: '#ADADAD', items: ['03.2023', '—', '05.2026'] },
+                    { color: '#FCFCFC', items: ['10+ ПРОЕКТОВ', 'ПАРТНЁРСТВА', 'ЗАПУСКИ'] },
+                    { color: '#00E000', items: ['СРОКИ', 'БЮДЖЕТЫ', 'КАЧЕСТВО', 'АНАЛИТИКА'] },
+                ]
+            },
+            {
+                tag: 'STAGE 04', name: 'НАВЫКИ', hint: '— УПРАВЛЕНИЕ ПРОЕКТАМИ —',
+                rows: [
+                    { color: '#FCE000', items: ['Agile', 'Scrum', 'Kanban'] },
+                    { color: '#00E000', items: ['Roadmaps', 'Бюджетирование', 'Риски'] },
+                    { color: '#ADADAD', items: ['Стейкхолдеры', 'Спринты', 'Ретро'] },
+                ]
+            },
+            {
+                tag: 'STAGE 05', name: 'ИНСТРУМЕНТЫ', hint: '— TOOLBOX —',
+                rows: [
+                    { color: '#FCE000', items: ['Jira', 'Notion', 'Trello', 'Miro'] },
+                    { color: '#00E000', items: ['Figma', 'Tilda', 'GetCourse'] },
+                    { color: '#FCFCFC', items: ['Google Docs', 'Sheets', 'Excel'] },
+                    { color: '#ADADAD', items: ['Mindbox', 'Яндекс.Метрика', 'FineBI'] },
+                ]
+            },
+            {
+                tag: 'STAGE 06', name: 'КЕЙСЫ', hint: '— ПРОЕКТЫ —',
+                rows: [
+                    { color: '#FCE000', items: ['СБЕРБАНК', 'Digital Marathon'] },
+                    { color: '#00E000', items: ['РОСТИКС', 'ВКУСНО И ТОЧКА'] },
+                    { color: '#FCFCFC', items: ['15 ЛЕТ НЕТОЛОГИИ', 'АКАДЕМИЯ'] },
+                    { color: '#D82800', items: ['WELLDONE', 'TG-БОТ', 'СПЕЦПРОЕКТ'] },
+                ]
+            },
+            {
+                tag: 'STAGE 07', name: 'ПОДХОДЫ', hint: '— КАК Я РАБОТАЮ —',
+                rows: [
+                    { color: '#FCE000', items: ['AGILE / SCRUM'] },
+                    { color: '#00E000', items: ['УПРАВЛЕНИЕ КОМАНДОЙ'] },
+                    { color: '#FCFCFC', items: ['РАБОТА С МЕТРИКАМИ'] },
+                    { color: '#ADADAD', items: ['CJM И КЛИЕНТСКИЙ ПУТЬ'] },
+                ]
+            },
+            {
+                tag: 'STAGE 08', name: 'КОНТАКТЫ', hint: '— ПОСЛЕДНИЙ РУБЕЖ —',
+                rows: [
+                    { color: '#FCE000', items: ['sergeyrenton@gmail.com'] },
+                    { color: '#00E000', items: ['@sergeyrenton'] },
+                    { color: '#FCFCFC', items: ['+7 913 092 30 38'] },
+                    { color: '#ADADAD', items: ['САНКТ-ПЕТЕРБУРГ', 'ОТКРЫТ К ПРОЕКТАМ'] },
+                ]
+            },
+        ];
+
+        // Boss HP: text → hitpoints (others default to 1)
+        const BOSS_MAP = {
+            'НЕТОЛОГИЯ': 3, 'sergeyrenton@gmail.com': 3,
+            'СЕРГЕЙ': 2, 'ПОТАПОВ': 2, 'PROJECT MANAGER': 2,
+            'СБЕРБАНК': 2, 'РОСТИКС': 2
+        };
+
+        let canvas, ctx, raf, running = false;
+        let px, py, flyStartY, flyTargetY, flyTick = 0;
+        // phases: fly-in → level-intro → level-play → level-clear → ... → game-win | game-over
+        let phase = 'fly-in', phaseTick = 0, levelIndex = 0;
+        let fireRate = 0;
+        const keys = {};
+        let bullets = [], blocks = [], rowOffsets = [], rowVels = [], rowBaseSpeeds = [];
+        let enemyBullets = [], enemyFireTimer = 0;
+        let explosions = [], stars = [];
+        let score = 0, destroyed = 0, total = 0;
+        let lives = MAX_LIVES, invincible = false, invincibleTick = 0;
+        let winTimestamp = 0;
+
+        function onKeyDown(e) {
+            keys[e.code] = true;
+            if (['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','Space','KeyZ'].includes(e.code))
+                e.preventDefault();
+        }
+        function onKeyUp(e) { keys[e.code] = false; }
+        function onResize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            repositionBlocks();
+        }
+        function onWheel(e) { e.preventDefault(); }
+        function onTouchMove(e) {
+            e.preventDefault();
+            if (phase !== 'level-play') return;
+            const t = e.touches[0];
+            px = Math.max(0, Math.min(canvas.width - PW, t.clientX - PW / 2));
+            py = Math.max(canvas.height * 0.52, Math.min(canvas.height - PH - 8, t.clientY - PH / 2));
+            keys['Space'] = true;
+        }
+        function onTouchEnd() { keys['Space'] = false; }
+
+        // ── Block management ──
+        function buildBlocks() {
+            blocks = []; rowOffsets = []; rowVels = []; rowBaseSpeeds = [];
+            enemyBullets = []; enemyFireTimer = 0;
+            destroyed = 0;
+            if (!ctx) return;
+            ctx.font = FONT;
+            const lv = LEVELS[levelIndex];
+            lv.rows.forEach((row, ri) => {
+                rowOffsets.push(0);
+                const spd = (0.35 + ri * 0.07);
+                rowBaseSpeeds.push(spd);
+                rowVels.push((ri % 2 === 0 ? 1 : -1) * spd);
+                const widths = row.items.map(t => ctx.measureText(t).width + PAD_X * 2);
+                const totalW = widths.reduce((a, b) => a + b, 0) + (widths.length - 1) * BLOCK_GAP;
+                let bx = (canvas.width - totalW) / 2;
+                row.items.forEach((text, ii) => {
+                    const hp = BOSS_MAP[text] || 1;
+                    blocks.push({
+                        baseX: bx, baseY: 70 + ri * (ROW_H + ROW_GAP),
+                        w: widths[ii], h: ROW_H,
+                        text, color: row.color,
+                        rowIdx: ri, alive: true, alpha: 0,
+                        hp, maxHp: hp, hitFlash: 0
+                    });
+                    bx += widths[ii] + BLOCK_GAP;
+                });
+            });
+            total = blocks.length;
+            updateHUD();
+        }
+
+        function repositionBlocks() {
+            if (!ctx || !blocks.length) return;
+            ctx.font = FONT;
+            const lv = LEVELS[levelIndex];
+            let bi = 0;
+            lv.rows.forEach((row, ri) => {
+                const widths = row.items.map(t => ctx.measureText(t).width + PAD_X * 2);
+                const totalW = widths.reduce((a, b) => a + b, 0) + (widths.length - 1) * BLOCK_GAP;
+                let bx = (canvas.width - totalW) / 2;
+                widths.forEach((w, ii) => {
+                    if (bi < blocks.length) {
+                        blocks[bi].baseX = bx;
+                        blocks[bi].baseY = 70 + ri * (ROW_H + ROW_GAP);
+                        blocks[bi].w = w;
+                        bx += w + BLOCK_GAP;
+                        bi++;
+                    }
+                });
+            });
+        }
+
+        function blockRect(b) {
+            return { x: b.baseX + rowOffsets[b.rowIdx], y: b.baseY, w: b.w, h: b.h };
+        }
+
+        function updateHUD() {
+            document.getElementById('gameScore').textContent = score;
+            document.getElementById('gameKills').textContent = destroyed + '/' + total;
+            document.getElementById('gameStage').textContent =
+                String(levelIndex + 1).padStart(2,'0') + '/08';
+            const hearts = '&#9829;'.repeat(lives) + '<span style="opacity:.25">&#9829;</span>'.repeat(MAX_LIVES - lives);
+            document.getElementById('gameLives').innerHTML = hearts;
+        }
+
+        function setPhase(p) {
+            phase = p; phaseTick = 0;
+            if (p === 'level-clear') AUDIO.stageClear();
+            if (p === 'game-win') {
+                AUDIO.gameWin();
+                winTimestamp = Date.now();
+                setTimeout(() => { window.location.href = 'deleted.html'; }, 6000);
+            }
+        }
+
+        // ── Explosions ──
+        function makeExplosion(x, y, color, big) {
+            const n = big ? 24 : 11;
+            return Array.from({ length: n }, () => ({
+                x, y,
+                vx: (Math.random() - 0.5) * (big ? 10 : 6),
+                vy: (Math.random() - 0.5) * (big ? 10 : 6) - 1,
+                s: Math.floor(Math.random() * (big ? 6 : 4)) + 2,
+                color, life: Math.floor(Math.random() * 18 + 10)
+            }));
+        }
+        function tickExplosions() {
+            explosions = explosions
+                .map(ps => { ps.forEach(p => { p.x+=p.vx; p.y+=p.vy; p.vy+=0.18; p.life--; }); return ps.filter(p=>p.life>0); })
+                .filter(ps => ps.length > 0);
+        }
+
+        function hitBlock(b) {
+            b.hp--;
+            b.hitFlash = 10;
+            if (b.hp > 0) {
+                score += 50;
+                AUDIO.bossHit();
+                return;
+            }
+            b.alive = false; score += 100 * b.maxHp; destroyed++;
+            const r = blockRect(b);
+            explosions.push(makeExplosion(r.x + r.w/2, r.y + r.h/2, b.color, r.w > 100));
+            if (b.maxHp > 1) AUDIO.bossExplode(); else AUDIO.explode();
+            updateHUD();
+            if (destroyed >= total) setTimeout(() => setPhase('level-clear'), 500);
+        }
+
+        function loseLife() {
+            lives--;
+            updateHUD();
+            AUDIO.playerHit();
+            if (lives <= 0) {
+                AUDIO.gameOver();
+                setTimeout(() => setPhase('game-over'), 300);
+            } else {
+                invincible = true;
+                invincibleTick = INVINCIBLE_DURATION;
+            }
+        }
+
+        function enemyFire() {
+            // Shoot from a random bottom-most alive block per column cluster
+            const aliveBlocks = blocks.filter(b => b.alive);
+            if (!aliveBlocks.length) return;
+            // Pick the alive block in a random row that is the lowest (highest ri)
+            const maxRi = Math.max(...aliveBlocks.map(b => b.rowIdx));
+            const bottomRow = aliveBlocks.filter(b => b.rowIdx === maxRi);
+            const shooter = bottomRow[Math.floor(Math.random() * bottomRow.length)];
+            const r = blockRect(shooter);
+            enemyBullets.push({ x: r.x + r.w/2 - 3, y: r.y + r.h, w: 6, h: 12, color: '#D82800' });
+        }
+
+        // ── Phase: fly-in ──
+        function updateFlyIn() {
+            flyTick++;
+            const t = Math.min(1, flyTick / 60);
+            py = flyStartY + (flyTargetY - flyStartY) * (1 - Math.pow(1-t, 3));
+            if (flyTick >= 72) { buildBlocks(); setPhase('level-intro'); }
+        }
+
+        // ── Phase: level-intro ──
+        function updateLevelIntro() {
+            phaseTick++;
+            // Blocks fade in starting at frame 25, staggered per row
+            if (phaseTick > 25) {
+                LEVELS[levelIndex].rows.forEach((_, ri) => {
+                    const t0 = 25 + ri * 8;
+                    if (phaseTick >= t0)
+                        blocks.filter(b => b.rowIdx === ri).forEach(b => {
+                            b.alpha = Math.min(1, (phaseTick - t0) / 20);
+                        });
+                });
+            }
+            if (phaseTick >= 100) setPhase('level-play');
+        }
+
+        // ── Phase: level-play ──
+        function updateLevelPlay() {
+            const W = canvas.width, H = canvas.height;
+            if (keys['ArrowLeft']||keys['KeyA'])  px -= 4;
+            if (keys['ArrowRight']||keys['KeyD']) px += 4;
+            if (keys['ArrowUp']||keys['KeyW'])    py -= 4;
+            if (keys['ArrowDown']||keys['KeyS'])  py += 4;
+            px = Math.max(0, Math.min(W - PW, px));
+            py = Math.max(H * 0.52, Math.min(H - PH - 8, py));
+
+            fireRate = Math.max(0, fireRate - 1);
+            if ((keys['Space']||keys['KeyZ']) && fireRate === 0) {
+                bullets.push({ x: px + PW/2 - 2, y: py, w: 4, h: 14 });
+                fireRate = 11;
+                AUDIO.shoot();
+            }
+
+            // Invincibility countdown
+            if (invincible) {
+                invincibleTick--;
+                if (invincibleTick <= 0) invincible = false;
+            }
+
+            // Row oscillation with bounce + speed scaling
+            const destroyRatio = total > 0 ? destroyed / total : 0;
+            const speedMult = 1 + 1.5 * destroyRatio; // up to 2.5× at end
+            rowVels.forEach((_, ri) => {
+                const dir = rowVels[ri] >= 0 ? 1 : -1;
+                rowVels[ri] = dir * rowBaseSpeeds[ri] * speedMult;
+                rowOffsets[ri] += rowVels[ri];
+                const alive = blocks.filter(b => b.rowIdx === ri && b.alive);
+                if (!alive.length) return;
+                const L = Math.min(...alive.map(b => b.baseX + rowOffsets[ri]));
+                const R = Math.max(...alive.map(b => b.baseX + b.w + rowOffsets[ri]));
+                if (L < 8 || R > W - 8) { rowVels[ri] *= -1; rowOffsets[ri] += rowVels[ri] * 2; }
+            });
+
+            // Hit flash decay
+            blocks.forEach(b => { if (b.hitFlash > 0) b.hitFlash--; });
+
+            // Player bullets
+            bullets = bullets.filter(b => {
+                b.y -= 9;
+                if (b.y + b.h < 0) return false;
+                for (const bl of blocks) {
+                    if (!bl.alive) continue;
+                    const r = blockRect(bl);
+                    if (b.x < r.x+r.w && b.x+b.w > r.x && b.y < r.y+r.h && b.y+b.h > r.y) {
+                        hitBlock(bl); return false;
+                    }
+                }
+                return true;
+            });
+
+            // Enemy fire timer
+            enemyFireTimer--;
+            if (enemyFireTimer <= 0) {
+                // Fire interval: 140 → 80 as level progresses and blocks die
+                const interval = Math.max(80, 140 - levelIndex * 8 - Math.floor(destroyRatio * 40));
+                enemyFireTimer = interval;
+                enemyFire();
+            }
+
+            // Enemy bullets
+            enemyBullets = enemyBullets.filter(b => {
+                b.y += 3.5;
+                if (b.y > H + 20) return false;
+                // Hit player (not invincible)
+                if (!invincible) {
+                    if (b.x < px+PW && b.x+b.w > px && b.y < py+PH && b.y+b.h > py) {
+                        loseLife();
+                        explosions.push(makeExplosion(px+PW/2, py+PH/2, '#D82800', true));
+                        return false;
+                    }
+                }
+                return true;
+            });
+        }
+
+        // ── Phase: level-clear ──
+        function updateLevelClear() {
+            phaseTick++;
+            if (phaseTick >= 100) {
+                if (levelIndex < LEVELS.length - 1) {
+                    levelIndex++;
+                    buildBlocks();
+                    setPhase('level-intro');
+                } else {
+                    setPhase('game-win');
+                }
+            }
+        }
+
+        // ── Canvas overlays ──
+        function drawCard(bx, by, bw, bh, borderColor) {
+            ctx.strokeStyle = borderColor; ctx.lineWidth = 3;
+            ctx.strokeRect(bx, by, bw, bh);
+            ctx.fillStyle = 'rgba(8,8,8,0.92)';
+            ctx.fillRect(bx+2, by+2, bw-4, bh-4);
+        }
+
+        function drawLevelIntro() {
+            const W = canvas.width, H = canvas.height, cx = W/2;
+            const lv = LEVELS[levelIndex];
+            if (phaseTick < 14) {
+                ctx.globalAlpha = (14 - phaseTick) / 22;
+                ctx.fillStyle = '#FCE000';
+                ctx.fillRect(0, 0, W, H);
+                ctx.globalAlpha = 1;
+            }
+            const bw = Math.min(480, W-48), bh = 258;
+            const bx = cx - bw/2, by = H/2 - bh/2;
+            drawCard(bx, by, bw, bh, '#FCE000');
+            ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+            ctx.font = "24px 'VT323', monospace";
+            ctx.fillStyle = '#00E000';
+            ctx.fillText(lv.tag, cx, by + 48);
+            const nPx = Math.min(60, W/8);
+            ctx.font = `${nPx}px 'VT323', monospace`;
+            ctx.fillStyle = '#FCE000';
+            ctx.fillText(lv.name, cx, by + 120);
+            ctx.font = "20px 'VT323', monospace";
+            ctx.fillStyle = '#ADADAD';
+            ctx.fillText(lv.hint, cx, by + 172);
+            if (phaseTick > 30 && Math.floor(phaseTick/15) % 2 === 0) {
+                ctx.fillStyle = '#00E000';
+                ctx.font = "20px 'VT323', monospace";
+                ctx.fillText('>> READY? <<', cx, by + 218);
+            }
+            const barW = bw - 48;
+            ctx.strokeStyle = '#6C6C6C'; ctx.lineWidth = 1;
+            ctx.strokeRect(cx - barW/2, by + bh + 14, barW, 8);
+            ctx.fillStyle = '#FCE000';
+            ctx.fillRect(cx - barW/2, by + bh + 14, barW * (levelIndex / LEVELS.length), 8);
+        }
+
+        function drawLevelClear() {
+            const W = canvas.width, H = canvas.height, cx = W/2;
+            const lv = LEVELS[levelIndex];
+            const bw = Math.min(440, W-48), bh = 210;
+            const bx = cx - bw/2, by = H/2 - bh/2;
+            drawCard(bx, by, bw, bh, '#00E000');
+            ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+            ctx.font = "46px 'VT323', monospace";
+            ctx.fillStyle = '#FCE000';
+            ctx.fillText('STAGE CLEAR!', cx, by + 52);
+            ctx.font = "20px 'VT323', monospace";
+            ctx.fillStyle = '#00E000';
+            ctx.fillText(lv.tag + ' — ' + lv.name, cx, by + 100);
+            ctx.fillStyle = '#ADADAD';
+            ctx.fillText('SCORE: ' + score, cx, by + 140);
+            const progress = (levelIndex + 1) / LEVELS.length;
+            const barW = bw - 48;
+            ctx.strokeStyle = '#6C6C6C'; ctx.lineWidth = 1;
+            ctx.strokeRect(cx - barW/2, by + 165, barW, 10);
+            ctx.fillStyle = '#00E000';
+            ctx.fillRect(cx - barW/2, by + 165, barW * progress, 10);
+            ctx.font = "16px 'VT323', monospace";
+            ctx.fillStyle = '#6C6C6C';
+            ctx.fillText((levelIndex+1) + ' / ' + LEVELS.length + ' STAGES DONE', cx, by + 192);
+        }
+
+        function drawGameWin() {
+            const W = canvas.width, H = canvas.height, cx = W/2;
+            const elapsed = Date.now() - winTimestamp;
+            const countdown = Math.max(0, Math.ceil((6000 - elapsed) / 1000));
+            const bw = Math.min(480, W-48), bh = 250;
+            const bx = cx - bw/2, by = H/2 - bh/2;
+            drawCard(bx, by, bw, bh, '#D82800');
+            ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+            if (Math.floor(Date.now()/400) % 2 === 0) {
+                ctx.font = "48px 'VT323', monospace";
+                ctx.fillStyle = '#D82800';
+                ctx.fillText('🗑 CV УДАЛЁН!', cx, by + 58);
+            }
+            ctx.font = "20px 'VT323', monospace";
+            ctx.fillStyle = '#FCE000';
+            ctx.fillText('ВСЕ ДАННЫЕ УНИЧТОЖЕНЫ БЕЗВОЗВРАТНО', cx, by + 108);
+            ctx.font = "26px 'VT323', monospace";
+            ctx.fillStyle = '#FCFCFC';
+            ctx.fillText('ИТОГОВЫЙ СЧЁТ: ' + score, cx, by + 150);
+            // Progress bar deletion
+            const barW = bw - 60;
+            const fill = Math.min(1, elapsed / 6000);
+            ctx.strokeStyle = '#D82800'; ctx.lineWidth = 1;
+            ctx.strokeRect(cx - barW/2, by + 178, barW, 10);
+            ctx.fillStyle = '#D82800';
+            ctx.fillRect(cx - barW/2, by + 178, barW * fill, 10);
+            ctx.font = "18px 'VT323', monospace";
+            ctx.fillStyle = countdown > 0 ? '#ADADAD' : '#D82800';
+            ctx.fillText(
+                countdown > 0 ? `УДАЛЕНИЕ ФАЙЛОВ... ПЕРЕХОД ЧЕРЕЗ ${countdown}` : 'ПЕРЕХОД...',
+                cx, by + 220
+            );
+        }
+
+        function drawGameOver() {
+            const W = canvas.width, H = canvas.height, cx = W/2;
+            ctx.fillStyle = 'rgba(0,0,0,0.75)';
+            ctx.fillRect(0, 0, W, H);
+            const bw = Math.min(440, W-48), bh = 220;
+            const bx = cx - bw/2, by = H/2 - bh/2;
+            drawCard(bx, by, bw, bh, '#D82800');
+            ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+            if (Math.floor(Date.now()/450) % 2 === 0) {
+                ctx.font = "58px 'VT323', monospace";
+                ctx.fillStyle = '#D82800';
+                ctx.fillText('GAME OVER', cx, by + 65);
+            }
+            ctx.font = "22px 'VT323', monospace";
+            ctx.fillStyle = '#FCFCFC';
+            ctx.fillText('СЧЁТ: ' + score, cx, by + 128);
+            ctx.font = "18px 'VT323', monospace";
+            ctx.fillStyle = '#ADADAD';
+            ctx.fillText('STAGE ' + String(levelIndex+1).padStart(2,'0') + ' / 08', cx, by + 162);
+            ctx.fillStyle = '#D82800';
+            ctx.fillText('— НАЖМИ ESC ДЛЯ ВЫХОДА —', cx, by + 198);
+        }
+
+        // ── Plane sprite ──
+        function drawPlane(x, y, alpha) {
+            // Flicker during invincibility
+            if (invincible && Math.floor(invincibleTick / 6) % 2 === 0) return;
+            const p = PIX;
+            ctx.globalAlpha = alpha;
+            ctx.fillStyle = '#FCE000'; ctx.fillRect(x+2*p, y-p, p, 2*p);
+            ctx.fillStyle = '#FCFCFC'; ctx.fillRect(x+p, y, 3*p, 7*p);
+            ctx.fillStyle = '#00E000'; ctx.fillRect(x+p+1, y+2*p+1, 3*p-2, 2*p);
+            ctx.fillStyle = '#ADADAD'; ctx.fillRect(x, y+3*p, 5*p, 2*p);
+            ctx.fillStyle = '#FCE000'; ctx.fillRect(x, y+3*p, p, p); ctx.fillRect(x+4*p, y+3*p, p, p);
+            ctx.fillStyle = '#6C6C6C'; ctx.fillRect(x+p, y+7*p, 3*p, 2*p);
+            ctx.fillStyle = '#ADADAD'; ctx.fillRect(x, y+6*p, p, 3*p); ctx.fillRect(x+4*p, y+6*p, p, 3*p);
+            ctx.fillStyle = '#FCFCFC'; ctx.fillRect(x+2*p, y+9*p, p, p);
+            ctx.fillStyle = '#FCE000'; ctx.fillRect(x+2*p, y+10*p, p, p);
+            const fl = (2+Math.floor(Math.random()*3))*p;
+            ctx.fillStyle = 'rgba(255,110,0,0.9)'; ctx.fillRect(x+2*p, y+11*p, p, fl);
+            ctx.globalAlpha = 1;
+        }
+
+        // ── Main draw ──
+        function draw() {
+            const W = canvas.width, H = canvas.height;
+            ctx.fillStyle = '#080808';
+            ctx.fillRect(0, 0, W, H);
+
+            stars.forEach(s => {
+                ctx.globalAlpha = 0.3 + Math.random() * 0.4;
+                ctx.fillStyle = '#FCFCFC';
+                ctx.fillRect(s.x, s.y, s.sz, s.sz);
+            });
+            ctx.globalAlpha = 1;
+
+            ctx.font = FONT; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+            blocks.forEach(b => {
+                if (!b.alive || b.alpha <= 0) return;
+                const r = blockRect(b);
+                ctx.globalAlpha = b.alpha;
+                // Hit flash: show white when just hit
+                const isBoss = b.maxHp > 1;
+                const flashOn = b.hitFlash > 0 && Math.floor(b.hitFlash / 2) % 2 === 0;
+                const drawColor = flashOn ? '#FFFFFF' : b.color;
+                ctx.strokeStyle = drawColor; ctx.lineWidth = isBoss ? 3 : 2;
+                ctx.strokeRect(r.x, r.y, r.w, r.h);
+                ctx.fillStyle = drawColor + (isBoss ? '30' : '1A');
+                ctx.fillRect(r.x+1, r.y+1, r.w-2, r.h-2);
+                ctx.fillStyle = drawColor;
+                ctx.fillText(b.text, r.x + r.w/2, r.y + r.h/2);
+                // HP bar for boss blocks
+                if (isBoss) {
+                    const barH = 4, barY = r.y + r.h + 4;
+                    ctx.fillStyle = '#333';
+                    ctx.fillRect(r.x, barY, r.w, barH);
+                    ctx.fillStyle = b.hp === b.maxHp ? '#00E000' : (b.hp > 1 ? '#FCE000' : '#D82800');
+                    ctx.fillRect(r.x, barY, r.w * (b.hp / b.maxHp), barH);
+                }
+            });
+            ctx.globalAlpha = 1;
+
+            // Player bullets
+            bullets.forEach(b => {
+                ctx.fillStyle = 'rgba(252,224,0,0.2)';
+                ctx.fillRect(b.x-3, b.y, b.w+6, b.h+6);
+                ctx.fillStyle = '#FCE000'; ctx.fillRect(b.x, b.y, b.w, b.h);
+                ctx.fillStyle = '#FCFCFC'; ctx.fillRect(b.x, b.y, b.w, 3);
+            });
+
+            // Enemy bullets (red)
+            enemyBullets.forEach(b => {
+                ctx.fillStyle = 'rgba(216,40,0,0.25)';
+                ctx.fillRect(b.x-3, b.y, b.w+6, b.h+6);
+                ctx.fillStyle = b.color; ctx.fillRect(b.x, b.y, b.w, b.h);
+                ctx.fillStyle = '#FCFCFC'; ctx.fillRect(b.x+2, b.y+b.h-3, 2, 3);
+            });
+
+            explosions.forEach(ps => {
+                ps.forEach(p => {
+                    ctx.globalAlpha = p.life/26;
+                    ctx.fillStyle = p.color;
+                    ctx.fillRect(p.x, p.y, p.s, p.s);
+                });
+            });
+            ctx.globalAlpha = 1;
+
+            const alpha = (phase === 'fly-in' && flyTick < 12) ? flyTick/12 : 1;
+            if (phase !== 'game-over') drawPlane(px, py, alpha);
+
+            if (phase === 'level-intro') drawLevelIntro();
+            if (phase === 'level-clear') drawLevelClear();
+            if (phase === 'game-win')    drawGameWin();
+            if (phase === 'game-over')   drawGameOver();
+        }
+
+        function loop() {
+            if (!running) return;
+            if      (phase === 'fly-in')      updateFlyIn();
+            else if (phase === 'level-intro') updateLevelIntro();
+            else if (phase === 'level-play')  updateLevelPlay();
+            else if (phase === 'level-clear') updateLevelClear();
+            // 'game-over' and 'game-win' are draw-only phases
+            tickExplosions();
+            stars.forEach(s => { s.y += s.sp; if (s.y > canvas.height) { s.y=-2; s.x=Math.random()*canvas.width; } });
+            draw();
+            raf = requestAnimationFrame(loop);
+        }
+
+        return {
+            start() {
+                canvas = document.getElementById('gameCanvas');
+                ctx = canvas.getContext('2d');
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+                flyStartY = canvas.height + 80;
+                flyTargetY = canvas.height - PH - 50;
+                px = canvas.width/2 - PW/2;
+                py = flyStartY;
+                phase = 'fly-in'; flyTick = 0; phaseTick = 0; levelIndex = 0;
+                bullets=[]; enemyBullets=[]; explosions=[]; score=0; destroyed=0; total=0; fireRate=0;
+                lives = MAX_LIVES; invincible = false; invincibleTick = 0; enemyFireTimer = 120;
+                stars = Array.from({ length: 100 }, () => ({
+                    x: Math.random()*canvas.width, y: Math.random()*canvas.height,
+                    sz: Math.random()*2+0.5, sp: Math.random()*0.85+0.2
+                }));
+                document.getElementById('gameWin').classList.remove('visible');
+                updateHUD();
+                window.addEventListener('keydown', onKeyDown);
+                window.addEventListener('keyup', onKeyUp);
+                window.addEventListener('resize', onResize);
+                window.addEventListener('wheel', onWheel, { passive: false });
+                canvas.addEventListener('touchmove', onTouchMove, { passive: false });
+                canvas.addEventListener('touchend', onTouchEnd);
+                running = true;
+                loop();
+            },
+            stop() {
+                running = false;
+                if (raf) cancelAnimationFrame(raf);
+                window.removeEventListener('keydown', onKeyDown);
+                window.removeEventListener('keyup', onKeyUp);
+                window.removeEventListener('resize', onResize);
+                window.removeEventListener('wheel', onWheel);
+                if (canvas) {
+                    canvas.removeEventListener('touchmove', onTouchMove);
+                    canvas.removeEventListener('touchend', onTouchEnd);
+                }
+                Object.keys(keys).forEach(k => delete keys[k]);
+            }
+        };
+    })();
+
+    function toggleMute() {
+        AUDIO.toggleMute();
+        document.getElementById('muteBtn').textContent = AUDIO.muted ? '♪ OFF' : '♪ SFX';
+    }
+
+    function startGame() {
+        AUDIO.resume();
+        document.getElementById('gameOverlay').classList.add('active');
+        GAME.start();
+    }
+
+    function exitGame() {
+        GAME.stop();
+        document.getElementById('gameOverlay').classList.remove('active');
+        document.getElementById('gameWin').classList.remove('visible');
+    }
+
+    async function handleSubmit(e) {
+        e.preventDefault();
+        const btn   = document.getElementById('submitBtn');
+        const name  = document.getElementById('fname').value.trim();
+        const email = document.getElementById('femail').value.trim();
+        const msg   = document.getElementById('fmsg').value.trim();
+        btn.textContent = 'SENDING...';
+        btn.disabled = true;
+        const text = `📩 <b>Новое сообщение с сайта</b>\n\n<b>Имя:</b> ${name}\n<b>Email:</b> ${email}\n\n<b>Сообщение:</b>\n${msg}`;
+        try {
+            const res  = await fetch('https://api.telegram.org/bot8780805321:AAF7JmVDBea6GIzyyl4UlChfNBeYJdFF4jo/sendMessage', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ chat_id: '857665393', text, parse_mode: 'HTML' })
+            });
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.description || 'API error');
+            btn.textContent = 'SENT! ✓';
+            btn.style.background = '#00B800';
+            e.target.reset();
+        } catch (err) {
+            btn.textContent = 'ERROR — TRY AGAIN';
+            btn.style.background = '#D82800';
+        } finally {
+            setTimeout(() => {
+                btn.textContent = 'ОТПРАВИТЬ >>';
+                btn.style.background = '';
+                btn.disabled = false;
+            }, 3500);
+        }
+    }
+</script>
+</body>
+</html>
