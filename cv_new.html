@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Сергей Потапов — Project Manager</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    font-size: 10.5px;
+    color: #1a1a1a;
+    background: #e0e0e0;
+    line-height: 1.55;
+  }
+
+  .page {
+    width: 210mm;
+    min-height: 297mm;
+    margin: 0 auto;
+    display: flex;
+    background: white;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.18);
+  }
+
+  /* ── LEFT COLUMN ── */
+  .col-left {
+    width: 62mm;
+    background: #f2f2f2;
+    padding: 28px 18px 28px 18px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  /* ── RIGHT COLUMN ── */
+  .col-right {
+    flex: 1;
+    padding: 28px 24px 28px 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  /* ── PHOTO ── */
+  .photo-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 18px;
+  }
+  .photo-circle {
+    width: 96px;
+    height: 96px;
+    border-radius: 50%;
+    border: 3px solid #E85D28;
+    overflow: hidden;
+    background: #ddd;
+    flex-shrink: 0;
+  }
+  .photo-circle img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: top center;
+  }
+  .name-block {
+    text-align: center;
+    margin-top: 12px;
+  }
+  .name-block .fullname {
+    font-size: 15px;
+    font-weight: 700;
+    color: #1a1a1a;
+    line-height: 1.25;
+  }
+  .name-block .role-title {
+    font-size: 9px;
+    font-weight: 600;
+    color: #E85D28;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-top: 5px;
+  }
+
+  /* ── LEFT SECTION HEADER ── */
+  .l-section {
+    margin-top: 18px;
+  }
+  .l-section-title {
+    font-size: 8.5px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #555;
+    padding-bottom: 5px;
+    border-bottom: 1.5px solid #ccc;
+    margin-bottom: 10px;
+  }
+
+  /* ── CONTACT ITEMS ── */
+  .contact-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 7px;
+    margin-bottom: 6px;
+    font-size: 9.5px;
+    color: #333;
+    text-decoration: none;
+    line-height: 1.4;
+  }
+  .contact-item .ci-icon {
+    font-size: 9px;
+    color: #E85D28;
+    margin-top: 1px;
+    flex-shrink: 0;
+    width: 12px;
+  }
+
+  /* ── SKILL TAGS ── */
+  .tags-wrap {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+  .tag {
+    display: inline-block;
+    font-size: 8.5px;
+    font-weight: 500;
+    border: 1px solid #bbb;
+    border-radius: 2px;
+    padding: 2px 6px;
+    color: #333;
+    background: white;
+    line-height: 1.4;
+  }
+
+  /* ── TOOLS SUB-CATEGORY ── */
+  .tools-cat {
+    margin-bottom: 8px;
+  }
+  .tools-cat-label {
+    font-size: 7.5px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #888;
+    margin-bottom: 4px;
+  }
+
+  /* ── RIGHT COLUMN ELEMENTS ── */
+  .r-section {
+    margin-bottom: 18px;
+  }
+  .r-section:last-child {
+    margin-bottom: 0;
+  }
+  .r-section-title {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: #E85D28;
+    padding-bottom: 5px;
+    border-bottom: 2px solid #E85D28;
+    margin-bottom: 11px;
+  }
+
+  /* ── ABOUT ── */
+  .about-text {
+    font-size: 10px;
+    color: #2a2a2a;
+    line-height: 1.6;
+    margin-bottom: 7px;
+  }
+
+  /* ── EXPERIENCE ── */
+  .exp-item {
+    margin-bottom: 14px;
+  }
+  .exp-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 8px;
+    margin-bottom: 2px;
+  }
+  .exp-company {
+    font-size: 11.5px;
+    font-weight: 700;
+    color: #1a1a1a;
+  }
+  .exp-date {
+    font-size: 8.5px;
+    color: #777;
+    white-space: nowrap;
+    flex-shrink: 0;
+    padding-top: 2px;
+  }
+  .exp-role {
+    font-size: 9.5px;
+    font-weight: 600;
+    color: #E85D28;
+    margin-bottom: 7px;
+  }
+  .exp-bullets {
+    list-style: none;
+    padding: 0;
+  }
+  .exp-bullets li {
+    font-size: 9.5px;
+    color: #2a2a2a;
+    padding-left: 12px;
+    position: relative;
+    margin-bottom: 4px;
+    line-height: 1.5;
+  }
+  .exp-bullets li::before {
+    content: '▸';
+    position: absolute;
+    left: 0;
+    color: #E85D28;
+    font-size: 8px;
+    top: 1px;
+  }
+  .exp-bullets strong {
+    font-weight: 600;
+    color: #1a1a1a;
+  }
+
+  /* ── CASES ── */
+  .cases-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  .case-card {
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    padding: 9px 10px;
+    background: #fafafa;
+  }
+  .case-partner {
+    font-size: 7.5px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #E85D28;
+    margin-bottom: 3px;
+  }
+  .case-name {
+    font-size: 9.5px;
+    font-weight: 600;
+    color: #1a1a1a;
+    line-height: 1.35;
+    margin-bottom: 5px;
+  }
+  .case-desc {
+    font-size: 8.5px;
+    color: #555;
+    line-height: 1.45;
+    margin-bottom: 4px;
+  }
+  .case-result {
+    font-size: 8.5px;
+    color: #1a1a1a;
+    font-weight: 500;
+    background: #fff3ee;
+    border-left: 2px solid #E85D28;
+    padding: 3px 6px;
+    line-height: 1.4;
+  }
+
+  /* ── RECOMMENDATIONS ── */
+  .reco-grid {
+    display: flex;
+    gap: 10px;
+  }
+  .reco-card {
+    flex: 1;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    padding: 9px 10px;
+    background: #fafafa;
+  }
+  .reco-name {
+    font-size: 9.5px;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin-bottom: 2px;
+  }
+  .reco-role {
+    font-size: 8.5px;
+    color: #666;
+    margin-bottom: 4px;
+    line-height: 1.4;
+  }
+  .reco-contact {
+    font-size: 8.5px;
+    color: #E85D28;
+    font-weight: 500;
+  }
+
+  /* ── PORTFOLIO LINK ── */
+  .portfolio-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 9px;
+    font-weight: 600;
+    color: #E85D28;
+    text-decoration: none;
+    border: 1px solid #E85D28;
+    border-radius: 3px;
+    padding: 4px 9px;
+    margin-top: 8px;
+  }
+  .portfolio-link::before { content: '↗'; }
+
+  /* ── PRINT ── */
+  @media print {
+    body { background: white; }
+    .page {
+      box-shadow: none;
+      margin: 0;
+      width: 100%;
+      min-height: 100vh;
+    }
+  }
+  @page {
+    size: A4;
+    margin: 0;
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- ═══════════ LEFT COLUMN ═══════════ -->
+  <div class="col-left">
+
+    <!-- Photo + Name -->
+    <div class="photo-wrap">
+      <div class="photo-circle">
+        <img src="photo.jpg" alt="Сергей Потапов">
+      </div>
+      <div class="name-block">
+        <div class="fullname">Сергей<br>Потапов</div>
+        <div class="role-title">Project Manager</div>
+      </div>
+    </div>
+
+    <!-- Contacts -->
+    <div class="l-section">
+      <div class="l-section-title">Контакты</div>
+      <div class="contact-item">
+        <span class="ci-icon">📍</span>
+        <span>Санкт-Петербург</span>
+      </div>
+      <div class="contact-item">
+        <span class="ci-icon">📞</span>
+        <span>+7 913 092 30 38</span>
+      </div>
+      <div class="contact-item">
+        <span class="ci-icon">✉</span>
+        <span>sergeyrenton@gmail.com</span>
+      </div>
+      <div class="contact-item">
+        <span class="ci-icon">✈</span>
+        <span>@sergeyrenton</span>
+      </div>
+      <div class="contact-item">
+        <span class="ci-icon">🌐</span>
+        <span>sergeyrenton.github.io/<br>sergeypotapov</span>
+      </div>
+    </div>
+
+    <!-- Skills -->
+    <div class="l-section">
+      <div class="l-section-title">Навыки</div>
+      <div class="tags-wrap">
+        <span class="tag">Agile / Scrum</span>
+        <span class="tag">Kanban</span>
+        <span class="tag">Roadmap</span>
+        <span class="tag">Бюджетирование</span>
+        <span class="tag">Риск-менеджмент</span>
+        <span class="tag">Управление стейкхолдерами</span>
+        <span class="tag">CJM</span>
+        <span class="tag">Спецпроекты</span>
+        <span class="tag">Influencer Marketing</span>
+        <span class="tag">Telegram-боты</span>
+        <span class="tag">CRM-автоматизация</span>
+        <span class="tag">Медиапланирование</span>
+        <span class="tag">Email-маркетинг</span>
+        <span class="tag">SMM</span>
+        <span class="tag">ОРД / ЕРИД</span>
+      </div>
+    </div>
+
+    <!-- Tools -->
+    <div class="l-section">
+      <div class="l-section-title">Инструменты</div>
+
+      <div class="tools-cat">
+        <div class="tools-cat-label">PM</div>
+        <div class="tags-wrap">
+          <span class="tag">Jira</span>
+          <span class="tag">Notion</span>
+          <span class="tag">Holst</span>
+          <span class="tag">Miro</span>
+          <span class="tag">Trello</span>
+        </div>
+      </div>
+
+      <div class="tools-cat">
+        <div class="tools-cat-label">Документы</div>
+        <div class="tags-wrap">
+          <span class="tag">Google Docs</span>
+          <span class="tag">Google Sheets</span>
+          <span class="tag">Excel</span>
+        </div>
+      </div>
+
+      <div class="tools-cat">
+        <div class="tools-cat-label">Аналитика</div>
+        <div class="tags-wrap">
+          <span class="tag">Яндекс.Метрика</span>
+          <span class="tag">FineBI</span>
+          <span class="tag">RICK</span>
+        </div>
+      </div>
+
+      <div class="tools-cat">
+        <div class="tools-cat-label">CRM &amp; Платформы</div>
+        <div class="tags-wrap">
+          <span class="tag">Mindbox</span>
+          <span class="tag">GetCourse</span>
+        </div>
+      </div>
+
+      <div class="tools-cat">
+        <div class="tools-cat-label">Дизайн</div>
+        <div class="tags-wrap">
+          <span class="tag">Figma</span>
+          <span class="tag">Tilda</span>
+        </div>
+      </div>
+
+      <div class="tools-cat">
+        <div class="tools-cat-label">AI</div>
+        <div class="tags-wrap">
+          <span class="tag">Claude</span>
+          <span class="tag">ChatGPT</span>
+        </div>
+      </div>
+
+      <div class="tools-cat">
+        <div class="tools-cat-label">Коммуникации</div>
+        <div class="tags-wrap">
+          <span class="tag">Slack</span>
+          <span class="tag">Telegram</span>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /col-left -->
+
+
+  <!-- ═══════════ RIGHT COLUMN ═══════════ -->
+  <div class="col-right">
+
+    <!-- О себе -->
+    <div class="r-section">
+      <div class="r-section-title">О себе</div>
+      <p class="about-text">
+        Project Manager с 3-летним опытом в EdTech, digital-спецпроектах и партнёрском маркетинге.
+        Запускал проекты полного цикла совместно со Сбербанком, Rostic's, Вкусно и Точка и Flowwow —
+        от идеи и переговоров с партнёрами до запуска и аналитики результатов.
+        Координировал кросс-функциональные команды до <strong>15–20 человек</strong>: разработка, дизайн, маркетинг, PR, подрядчики.
+      </p>
+      <p class="about-text">
+        Работаю с CRM-коммуникациями, Telegram-ботами, лендингами, influencer-кампаниями и спецпроектами.
+        Держу фокус на сроках, бюджетах и измеримом результате.
+      </p>
+      <a class="portfolio-link" href="https://sergeyrenton.github.io/sergeypotapov">Портфолио проектов</a>
+    </div>
+
+    <!-- Опыт работы -->
+    <div class="r-section">
+      <div class="r-section-title">Опыт работы</div>
+      <div class="exp-item">
+        <div class="exp-header">
+          <div class="exp-company">Нетология</div>
+          <div class="exp-date">Март 2023 — Май 2026</div>
+        </div>
+        <div class="exp-role">Project Manager · 3 года 3 месяца</div>
+        <ul class="exp-bullets">
+          <li>Запустил <strong>10+ партнёрских digital-спецпроектов</strong> со Сбербанком, Rostic's, Вкусно и Точка, Flowwow с охватом <strong>50 000+ пользователей</strong></li>
+          <li>Вёл проекты полного цикла с бюджетом <strong>до 5 млн руб</strong>: от идеи и переговоров с партнёрами до запуска, аналитики и поддержки — в срок и в рамках бюджета</li>
+          <li>Координировал кросс-функциональные команды до <strong>15–20 человек</strong>: разработка, дизайн, маркетинг, PR, юристы, подрядчики</li>
+          <li>Запускал лендинги, Telegram-боты и CRM-цепочки в Mindbox; анализировал эффективность через Яндекс.Метрику, FineBI, RICK</li>
+          <li>Управлял influencer marketing: подбор блогеров, согласование интеграций, контроль контента и маркировки рекламы (ОРД/ЕРИД)</li>
+          <li>Формировал и реализовывал медиапланы: email-рассылки, SMM, influencer marketing, Telegram-посевы</li>
+          <li>Координировал социальные спецпроекты с фондами «Антон тут рядом» и «Открывая горизонты»</li>
+          <li>Вёл проектную документацию и документооборот с партнёрами и подрядчиками (договоры, акты, ЭДО)</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Ключевые проекты -->
+    <div class="r-section">
+      <div class="r-section-title">Ключевые проекты</div>
+      <div class="cases-grid">
+
+        <div class="case-card">
+          <div class="case-partner">Сбербанк</div>
+          <div class="case-name">Digital Marathon — образовательный партнёрский спецпроект</div>
+          <div class="case-desc">Партнёрский проект Нетологии и Сбербанка: бесплатные digital-курсы, интеграция платформ, поддержка пользователей. Команда 15–20 чел., инструменты: Jira, Notion, Google Workspace.</div>
+          <div class="case-result">Реализована интеграция платформ; выстроена партнёрская коммуникация и поддержка</div>
+        </div>
+
+        <div class="case-card">
+          <div class="case-partner">Social EdTech</div>
+          <div class="case-name">Академия взрослой жизни — образовательный проект для подростков</div>
+          <div class="case-desc">Совместный проект Нетологии и фонда «Открывая горизонты»: видеоуроки с экспертами, лендинг, онлайн-занятия, influencer-продвижение.</div>
+          <div class="case-result">Проект запущен от идеи до релиза: съёмки, SMM и influencer-кампания</div>
+        </div>
+
+        <div class="case-card">
+          <div class="case-partner">Спецпроект</div>
+          <div class="case-name">15 лет Нетологии — интерактивный ностальгический лендинг</div>
+          <div class="case-desc">Digital-спецпроект к юбилею: интерактивный лендинг в стиле 2011 года, Telegram-бот, CRM-цепочки, розыгрыш и engagement-механики.</div>
+          <div class="case-result">CRM-цепочки и Telegram-бот разработаны и запущены в срок</div>
+        </div>
+
+        <div class="case-card">
+          <div class="case-partner">Telegram-бот</div>
+          <div class="case-name">«Ну что, начнём?» — мотивационный Telegram-бот с партнёрами</div>
+          <div class="case-desc">Бот с целями по спорту, питанию, стилю, накоплениям и саморазвитию. CRM-коммуникации, influencer marketing, gamification-механики.</div>
+          <div class="case-result">Разработана концепция и roadmap; подключены партнёры; запущены пользовательские сценарии</div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Рекомендации -->
+    <div class="r-section">
+      <div class="r-section-title">Рекомендации</div>
+      <div class="reco-grid">
+        <div class="reco-card">
+          <div class="reco-name">Анастасия Тимоничева</div>
+          <div class="reco-role">Бренд-директор, Нетология</div>
+          <div class="reco-contact">Telegram: @Simona_Tim</div>
+        </div>
+        <div class="reco-card">
+          <div class="reco-name">Яна Александрова</div>
+          <div class="reco-role">Руководитель спецпроектов, Нетология</div>
+          <div class="reco-contact">Telegram: @iaaleksandrova</div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /col-right -->
+
+</div><!-- /page -->
+</body>
+</html>
